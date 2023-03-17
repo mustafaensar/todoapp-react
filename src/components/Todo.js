@@ -31,8 +31,22 @@ export default function Todo() {
     const newNotes = notes.filter(elem => elem.id !==id);
     setNotes(newNotes);
   }
+  
+  function updateNote(id){
+    let promptNote = prompt("Write a new note")
+    const updatedNote = {
+      id: id,
+      body: promptNote
+    }
+    
+    const index = notes.findIndex(obj => {
+      return obj.id === id;
+    });
 
-
+    const newNotes = [...notes]
+    newNotes[index] = updatedNote;
+    setNotes(newNotes);
+  }
 
   return (
     <>
@@ -50,7 +64,11 @@ export default function Todo() {
         <ul>
           {notes.map(note => {
             return(
-              <li key={note.id}>{note.body} <button onClick={() => deleteNote(note.id)}>Delete</button> </li>
+              <li key={note.id}>
+                {note.body} 
+                <button onClick={() => updateNote(note.id)}>Update</button>  
+                <button onClick={() => deleteNote(note.id)}>Delete</button>  
+              </li>
             )
           })}
         </ul>
