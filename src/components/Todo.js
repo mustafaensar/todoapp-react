@@ -5,10 +5,10 @@ export default function Todo() {
 
   const [notes,setNotes] = React.useState(() => JSON.parse(localStorage.getItem("notes")) || []);
   const [note, setNewNote] = React.useState("");
-
   
   React.useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
+    setNewNote("");
   },[notes])
   
 
@@ -22,6 +22,7 @@ export default function Todo() {
     const newNote = {
       id: nanoid(),
       body: note,
+      seen: false
     }
 
     setNotes((prevNotes) => [newNote, ...prevNotes]);
@@ -36,16 +37,45 @@ export default function Todo() {
     let promptNote = prompt("Write a new note")
     const updatedNote = {
       id: id,
-      body: promptNote
+      body: promptNote,
+      seen: false
     }
     
     const index = notes.findIndex(obj => {
       return obj.id === id;
     });
 
-    const newNotes = [...notes]
+    const newNotes = [...notes];
     newNotes[index] = updatedNote;
     setNotes(newNotes);
+  }
+
+  function handleCheckBox(id){
+    
+    const index = notes.findIndex(obj => {
+      return obj.id === id;
+    });
+    
+    const newNotes = [...notes];
+    if(!newNotes[index].seen){
+      newNotes[index].seen = true;
+      setNotes(newNotes);
+    }else{
+      newNotes[index].seen = false;
+      setNotes(newNotes);
+    }
+  }
+
+  function countSelectedNotes(){
+    const newNotes = notes.filter(elem => elem.seen === true);
+    return newNotes.length;
+  }
+
+  function deleteCheckedNotes(){
+    if(countSelectedNotes !== 0){
+      const newNotes = notes.filter(elem => elem.seen !== true);
+      setNotes(newNotes);
+    }
   }
 
   return (
@@ -58,20 +88,35 @@ export default function Todo() {
           value={note}
           onChange={ e => setNewNote(e.target.value)}
         />
-        <button onClick={() => createNewNote()}>Add</button>
+        <button className='button' onClick={() => createNewNote()}>Add</button>
       </div>
       <div className='todo-list'>
         <ul>
           {notes.map(note => {
             return(
               <li key={note.id}>
-                {note.body} 
-                <button onClick={() => updateNote(note.id)}>Update</button>  
-                <button onClick={() => deleteNote(note.id)}>Delete</button>  
+                <div>
+                <input
+                  className='checkbox-round'
+                  type="checkbox"
+                  checked={note.seen}
+                  onChange={() => handleCheckBox(note.id)}
+                />
+                </div>
+                {note.body}
+                <div className='list--button'>
+                <button className='button' onClick={() => updateNote(note.id)}>Update</button>  
+                <button className='button' onClick={() => deleteNote(note.id)}>Delete</button>    
+                </div> 
               </li>
             )
           })}
         </ul>
+      </div>
+      <hr/>
+      <div className='footer'>
+        <p><span>{countSelectedNotes()}</span> item selected</p>
+        <p className='clear-all' onClick={deleteCheckedNotes}>Clear All</p>
       </div>
     </div>
     </>
