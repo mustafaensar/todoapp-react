@@ -35,18 +35,13 @@ export default function Todo() {
   
   function updateNote(id){
     let promptNote = prompt("Write a new note")
-    const updatedNote = {
-      id: id,
-      body: promptNote,
-      seen: false
-    }
     
     const index = notes.findIndex(obj => {
       return obj.id === id;
     });
 
     const newNotes = [...notes];
-    newNotes[index] = updatedNote;
+    newNotes[index].body = promptNote;
     setNotes(newNotes);
   }
 
